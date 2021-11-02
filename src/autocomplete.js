@@ -167,7 +167,8 @@ angular.module('google.places', [])
                             placesService.getDetails({ placeId: prediction.place_id }, function (place, status) {
                                 if (status == google.maps.places.PlacesServiceStatus.OK) {
                                     $scope.$apply(function () {
-                                        $scope.model = place;
+                                        $scope.model = overridePlaceByRequestedPredictionIfNeeded(place, prediction);
+                                        console.log(place);
                                         $scope.$emit('g-places-autocomplete:select', place);
                                         $timeout(function () {
                                             controller.$viewChangeListeners.forEach(function (fn) { fn(); });
@@ -178,6 +179,20 @@ angular.module('google.places', [])
                         }
 
                         clearPredictions();
+                    }
+
+                    function overridePlaceByRequestedPredictionIfNeeded(place, prediction) {
+                        var actual = place.formatted_address.split(" ")[0];
+                        var expected = prediction.description.split(" ")[0];
+                        if (actual === expected) {
+                            return;
+                        }
+                        console.log(prediction.description);
+                        console.log(place.formatted_address);
+                        console.log(prediction);
+                        console.log(place);
+                        place.customFullAddress = "TEST";
+                        return place;
                     }
 
                     function parse(viewValue) {
