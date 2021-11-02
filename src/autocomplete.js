@@ -184,14 +184,9 @@ angular.module('google.places', [])
                     function overridePlaceByRequestedPredictionIfNeeded(place, prediction) {
                         var actual = place.formatted_address.split(" ")[0];
                         var expected = prediction.description.split(" ")[0];
-                        if (actual === expected) {
-                            return;
+                        if (actual !== expected) {
+                            place.customFullAddress = prediction.description;
                         }
-                        console.log(prediction.description);
-                        console.log(place.formatted_address);
-                        console.log(prediction);
-                        console.log(place);
-                        place.customFullAddress = "TEST";
                         return place;
                     }
 
