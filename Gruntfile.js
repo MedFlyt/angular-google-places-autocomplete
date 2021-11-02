@@ -9,9 +9,12 @@
 'use strict';
 
 module.exports = function (grunt) {
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+
   grunt.initConfig({
     jshint: {
       options: {
+        esversion: 6,
         reporter: require('jshint-stylish'),
         jasmine: true,
         node: true,
@@ -107,7 +110,7 @@ module.exports = function (grunt) {
   grunt.registerTask('build', [
     'jshint',
     'clean',
-    'bower',
+    // 'bower',
     'cssmin',
     'uglify'
   ]);
