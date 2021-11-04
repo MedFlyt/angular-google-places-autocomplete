@@ -224,7 +224,11 @@ angular.module('google.places', [])
                         if (isString(modelValue)) {
                             viewValue = modelValue;
                         } else if (isObject(modelValue)) {
-                            viewValue = modelValue.formatted_address;
+                            if (modelValue.predictionText) {
+                                viewValue = modelValue.predictionText;
+                            } else {
+                                viewValue = modelValue.formatted_address;
+                            }
                         }
 
                         return viewValue;
