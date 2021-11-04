@@ -149,8 +149,8 @@ angular.module('google.places', [])
                         });
                     }
 
-                    function select(customFullAddress) {
-                        var prediction, preventClearPredictions = false;
+                    function select() {
+                        var prediction;
 
                         prediction = $scope.predictions[$scope.selected];
                         if (!prediction) return;
@@ -167,16 +167,8 @@ angular.module('google.places', [])
                             placesService.getDetails({ placeId: prediction.place_id }, function (place, status) {
                                 if (status == google.maps.places.PlacesServiceStatus.OK) {
                                     $scope.$apply(function () {
+                                        place.predictionText = prediction.description;
                                         $scope.model = place;
-                                        if (validatePlaceByPrediction(place, prediction)) {
-                                            if (customFullAddress) {
-                                                place.customFullAddress = customFullAddress;
-                                            }
-                                            $scope.model = place;
-                                        } else {
-                                            preventClearPredictions = true;
-                                            return;
-                                        }
 
                                         $scope.$emit('g-places-autocomplete:select', place);
                                         $timeout(function () {
@@ -187,27 +179,10 @@ angular.module('google.places', [])
                             });
                         }
 
-                        if (!preventClearPredictions) {
-                            clearPredictions();
-                        }
+                        clearPredictions();
                     }
 
-                    function validatePlaceByPrediction(place, prediction) {
-                        var actual = place.formatted_address.split(" ")[0];
-                        var expected = prediction.description.split(" ")[0];
-                        if (actual === expected) {
-                            return true;
-                        }
-                        var customFullAddress = prediction.description;
-                        var [number, ...rest] = prediction.description.split(" ");
-                        var newAddress = `${number.replace(/\-/g, "")} ${rest.join(" ")}`;
-                        parse(newAddress, function() {
-                            select(customFullAddress);
-                        });
-                        return false;
-                    }
-
-                    function parse(viewValue, cb) {
+                    function parse(viewValue) {
                         var request;
 
                         if (!(viewValue && isString(viewValue))) return viewValue;
@@ -232,13 +207,6 @@ angular.module('google.places', [])
 
                                 if ($scope.predictions.length > 5) {
                                     $scope.predictions.length = 5;  // trim predictions down to size
-                                }
-
-                                if (cb) {
-                                    if ($scope.predictions.length > 0) {
-                                        $scope.selected = 0;
-                                    }
-                                    cb();
                                 }
                             });
                         });
